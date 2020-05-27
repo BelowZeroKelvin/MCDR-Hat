@@ -1,4 +1,13 @@
+# coding: utf-8
 import json
+
+blacklist = [
+    'minecraft:leather_chestplate', 'minecraft:leather_leggings', 'minecraft:leather_boots',
+    'minecraft:chainmail_chestplate', 'minecraft:chainmail_leggings', 'minecraft:chainmail_boots',
+    'minecraft:iron_chestplate', 'minecraft:iron_leggings', 'minecraft:iron_boots',
+    'minecraft:diamond_chestplate', 'minecraft:diamond_leggings', 'minecraft:diamond_boots',
+    'minecraft:elytra'
+]
 
 
 class Inventory():
@@ -10,7 +19,7 @@ class Inventory():
     def get_slot(self, slot):
         info = self.PlayerInfoAPI.getPlayerInfo(
             self.server, self.player, 'Inventory')
-        slotinfo=[i for i in info if i['Slot']==slot]
+        slotinfo = [i for i in info if i['Slot'] == slot]
         if not len(slotinfo):
             return None
         else:
@@ -80,4 +89,7 @@ def on_info(server, info):
     if info.is_player and info.content == '!!hat':
         inventory = Inventory(server, info.player)
         selected = inventory.selected_slot()
+        if inventory.get_slot(selected)['id'] in blacklist:
+            server.tell(info.player, '§7[Hat]该物品不能戴在头上！')
+            return
         inventory.swap_slot(selected, 103)
